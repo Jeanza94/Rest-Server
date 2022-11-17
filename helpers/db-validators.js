@@ -1,5 +1,6 @@
+
 const Role = require('../models/rol');
-const Usuario = require('../models/usuario')
+const Usuario = require('../models/usuario');
 
 const esRoleValido = async (rol = '') => {
 
@@ -16,6 +17,7 @@ const emailExiste = async (correo = '') => {
     if (existeEmail) {
         throw new Error('El correo ya existe');
     }
+
 }
 
 const existeUsuarioPorId = async (id = '') => {
@@ -27,8 +29,10 @@ const existeUsuarioPorId = async (id = '') => {
 }
 
 
+
 module.exports = {
     esRoleValido,
     emailExiste,
-    existeUsuarioPorId
+    existeUsuarioPorId,
+
 }
