@@ -1,7 +1,10 @@
-//Exportaciones 
+//Importaciones de terceros
 const express = require('express');
 const cors = require('cors');
+
+//Importaciones del codigo
 const router = require('../routes/usuarios');
+const { dbConnection } = require('../database/config');
 
 
 class Server {
@@ -10,13 +13,20 @@ class Server {
         //atributos
         this.app = express();
         this.port = process.env.PORT;
-        this.usuariosPath = '/api/usuarios'
+        this.usuariosPath = '/api/usuarios';
+
+        //conectar a base de datos
+        this.conectarDB();
 
         //middlewares
         this.middlewares();
 
         //metodos, rutas de aplicación
         this.routes();
+    }
+
+    async conectarDB() {
+        await dbConnection();
     }
 
     middlewares() {
