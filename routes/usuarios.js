@@ -11,7 +11,10 @@ const { esRoleValido, emailExiste, existeUsuarioPorId } = require('../helpers/db
 
 const router = Router();
 
-router.get('/', usuariosGet)
+router.get('/', [
+    validarJWT,
+    esAdminRole,
+], usuariosGet)
 
 router.put('/:id', [
     check('id', 'No es un ID valido').isMongoId(),
