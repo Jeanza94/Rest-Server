@@ -1,6 +1,7 @@
 
-const { request, response } = require('express')
-const Orden = require('../models/orden');
+const { request, response } = require('express');
+const orden = require('../models/orden');
+const { Orden } = require('../models');
 
 
 const ordenesGet = async (req = request, res = response) => {
@@ -100,11 +101,34 @@ const ordenesPost = async (req = request, res = response) => {
 
 }
 
+const ordenesPut = async (req = request, res = response) => {
+    const { id = '' } = req.params;
+    const { _id, uid, ...data } = req.body;
+    const { _id: usuarioId } = req.usuario;
+
+    try {
+        const ordenActualizada = await orden.findByIdAndUpdate(id, {
+            ...data,
+            uid: usuarioId
+        }, { new: true });
+        return res.status(200).json({
+            msg: `Orden ${id} actualizada correctamente`,
+            orden: ordenActualizada
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            msg: 'Revisar logs del servidor'
+        })
+    }
+}
+
 
 
 
 module.exports = {
     ordenesPost,
     ordenesGetByUid,
-    ordenesGet
+    ordenesGet,
+    ordenesPut
 }

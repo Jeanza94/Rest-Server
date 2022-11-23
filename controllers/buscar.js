@@ -1,12 +1,13 @@
 const { request, response } = require("express");
 const { isValidObjectId } = require("mongoose");
-const { Usuario, Categoria, Producto } = require('../models');
+const { Usuario, Categoria, Producto, Orden } = require('../models');
 
 const coleccionesPermitidas = [
     'usuarios',
     'categorias',
     'productos',
-    'roles'
+    'roles',
+    'ordenes'
 ];
 
 const categoriasPermitidas = [
@@ -80,6 +81,20 @@ const buscarProductos = async (termino = '', res = response) => {
     });
 }
 
+const buscarOrdenes = async (termino = '', res = response) => {
+    const esMongoId = isValidObjectId(termino);
+    if (esMongoId) {
+        const orden = await Orden.findById(termino);
+        return res.status(200).json({
+            results: orden ? [orden] : []
+        });
+    }
+
+    return res.status(400).json({
+        msg: `La orden con este #seguimiento: ${termino} no es valida`
+    });
+}
+
 
 const buscar = async (req = request, res = response) => {
 
@@ -103,6 +118,10 @@ const buscar = async (req = request, res = response) => {
 
         case 'productos':
             buscarProductos(termino, res)
+            break;
+
+        case 'ordenes':
+            buscarOrdenes(termino, res)
             break;
 
         default:

@@ -1,5 +1,6 @@
 const { request, response, } = require('express');
 const bcryptjs = require('bcryptjs');
+const generarJWT = require('../helpers/generarJWT')
 
 const Usuario = require('../models/usuario');
 
@@ -12,33 +13,49 @@ const usuariosGet = async (req = request, res = response) => {
 
     // const total = await Usuario.countDocuments({ estado: true })
 
-    const [usuarios, total] = await Promise.all([
+    const [usuariosActivos, usuariosInactivos, total] = await Promise.all([
         Usuario.find({ estado: true })
             .skip(Number(desde))
             .limit(Number(limite)),
+        Usuario.find({ estado: false }),
         Usuario.countDocuments({ estado: true })
     ])
 
     res.json({
         total,
-        usuarios
+        usuariosActivos,
+        usuariosInactivos
     });
 }
 
 const usuariosPost = async (req = request, res = response) => {
 
-    const { nombre, correo, password, rol } = req.body;
+    try {
+        const { nombre, correo, password, rol } = req.body;
 
-    const usuario = new Usuario({ nombre, correo, password, rol });
+        const usuario = new Usuario({ nombre, correo, password, rol });
 
-    //encryptar la constraseña
-    const salt = bcryptjs.genSaltSync();
-    usuario.password = bcryptjs.hashSync(password, salt);
+        //encryptar la constraseña
+        const salt = bcryptjs.genSaltSync();
+        usuario.password = bcryptjs.hashSync(password, salt);
 
-    //guardar en base de datos
-    await usuario.save();
+        //generar token
+        const token = await generarJWT(usuario._id);
 
-    res.json(usuario);
+        //guardar en base de datos
+        await usuario.save();
+
+        return res.json({
+            usuario,
+            token
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            MSG: 'Revisar logs del servidor'
+        })
+    }
+
 }
 
 const usuariosPut = async (req = request, res = response) => {

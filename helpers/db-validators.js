@@ -1,6 +1,6 @@
 
 const Role = require('../models/rol');
-const { Usuario, Categoria, Producto } = require('../models');
+const { Usuario, Categoria, Producto, Orden } = require('../models');
 
 const esRoleValido = async (rol = '') => {
 
@@ -56,6 +56,36 @@ const productoExistePorId = async (id = '') => {
     }
 }
 
+const ordenExistePorId = async (id = '') => {
+    const producto = await Orden.findById(id);
+    if (!producto) {
+        throw new Error(`Este id ${id} no pertenece a una orden`);
+    }
+}
+
+const estadoOrdenExiste = async (estado = '') => {
+
+    const estadosPermitidos = [
+        'Guardado',
+        'Cancelado',
+        'Cumplido'
+    ]
+
+    if (estado) {
+        if (!estadosPermitidos.includes(estado)) {
+            throw new Error(`Este estado ${estado} no es permitido`)
+        }
+    }
+}
+
+const coleccionesPermitidas = (coleccion = '', colecciones = []) => {
+    const incluida = colecciones.includes(coleccion);
+    if (!incluida) {
+        throw new Error(`La colección ${coleccion} no es permitida, ${colecciones}`)
+    }
+
+    return true;
+}
 
 
 module.exports = {
@@ -65,6 +95,9 @@ module.exports = {
     existeCategoria,
     productoExiste,
     existeCategoriaNombre,
-    productoExistePorId
+    productoExistePorId,
+    ordenExistePorId,
+    estadoOrdenExiste,
+    coleccionesPermitidas
 
 }
