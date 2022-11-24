@@ -94,11 +94,24 @@ const usuariosPatch = (req = request, res = response) => {
     });
 }
 
+const usuariosGetById = async (req = request, res = response) => {
+
+    const { id } = req.params;
+    try {
+        const usuario = await Usuario.findById(id);
+        return res.status(200).json(usuario);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: 'Revisar logs del servidor' })
+    }
+}
+
 
 module.exports = {
     usuariosGet,
     usuariosPost,
     usuariosPut,
     usuariosDelete,
-    usuariosPatch
+    usuariosPatch,
+    usuariosGetById
 }

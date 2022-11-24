@@ -106,10 +106,10 @@ const ordenesPut = async (req = request, res = response) => {
     const { _id, uid, ...data } = req.body;
     const { _id: usuarioId } = req.usuario;
 
+
     try {
         const ordenActualizada = await orden.findByIdAndUpdate(id, {
             ...data,
-            uid: usuarioId
         }, { new: true });
         return res.status(200).json({
             msg: `Orden ${id} actualizada correctamente`,
